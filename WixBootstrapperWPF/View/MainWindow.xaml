@@ -1,0 +1,109 @@
+﻿<local:WindowBase x:Class="WixBootstrapperWPF.View.MainWindow"
+                  x:Name="Main"
+                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                  xmlns:vm="clr-namespace:WixBootstrapperWPF.ViewModel"
+                  xmlns:conv="clr-namespace:WixBootstrapperWPF.Converter"
+                  xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                  xmlns:res="clr-namespace:WixBootstrapperWPF.Res"
+                  DataContext="{Binding Source={x:Static vm:MainViewModel.Singleton}}"
+                  Width="480"
+                  Height="320"
+                  xmlns:local="clr-namespace:WixBootstrapperWPF.View">
+    <Window.Resources>
+        <ResourceDictionary>
+            <conv:EnumConverter x:Key="EConv" />
+            <conv:ToggleStateConverter x:Key="DbTconv"
+                                       Status1=".6"
+                                       Status2="0" />
+            <vm:ApplyState x:Key="Install">Install</vm:ApplyState>
+            <vm:ApplyState x:Key="UnInstall">UnInstall</vm:ApplyState>
+            <SolidColorBrush x:Key="VSBlue"
+                             Color="#007acc" />
+            <SolidColorBrush x:Key="Normal"
+                             Color="#ffffff" />
+        </ResourceDictionary>
+    </Window.Resources>
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="GotKeyboardFocus">
+            <BeginStoryboard>
+                <Storyboard FillBehavior="HoldEnd"
+                            Storyboard.TargetName="PART_ROOT_BORDER"
+                            Storyboard.TargetProperty="BorderBrush">
+                    <ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                Value="{StaticResource VSBlue}" />
+                    </ObjectAnimationUsingKeyFrames>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="LostKeyboardFocus">
+            <BeginStoryboard>
+                <Storyboard FillBehavior="HoldEnd"
+                            Storyboard.TargetName="PART_ROOT_BORDER"
+                            Storyboard.TargetProperty="BorderBrush">
+                    <ObjectAnimationUsingKeyFrames>
+                        <DiscreteObjectKeyFrame KeyTime="0"
+                                                Value="{StaticResource Normal}" />
+                    </ObjectAnimationUsingKeyFrames>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+    <Border x:Name="PART_ROOT_BORDER"
+            BorderBrush="#ffffff"
+            BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect Color="Black"
+                              ShadowDepth="0"
+                              BlurRadius="6"
+                              Direction="0"
+                              Opacity="{Binding IsKeyboardFocused, ElementName=Main,Converter={StaticResource DbTconv}}" />
+        </Border.Effect>
+        <Grid Background="#ffffff">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <DockPanel LastChildFill="False"
+                       Height="32">
+                <Button DockPanel.Dock="Right"
+                        Click="Button_Click">
+                    Close
+                </Button>
+            </DockPanel>
+            <TextBlock Grid.Row="1"
+                       Text="{Binding Output}" />
+            <TextBox Height="32"
+                     Grid.Row="2"
+                     Text="{Binding Path,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
+            <Grid Grid.Row="3"
+                  Height="32">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Button Command="{Binding}"
+                        CommandParameter="Install"
+                        FontFamily="{DynamicResource Segoe}"
+                        Content="&#xE701;"
+                        Visibility="{Binding ApplyState ,Converter={StaticResource EConv},ConverterParameter={StaticResource Install}}" />
+                <Button Grid.Column="1"
+                        Command="{Binding}"
+                        CommandParameter="UnInstall"
+                        Visibility="{Binding ApplyState ,Converter={StaticResource EConv},ConverterParameter={StaticResource UnInstall}}">UnInstall</Button>
+                <Button Grid.Column="4"
+                        Command="{Binding}"
+                        CommandParameter="Exit">Exit</Button>
+            </Grid>
+        </Grid>
+    </Border>
+
+</local:WindowBase>

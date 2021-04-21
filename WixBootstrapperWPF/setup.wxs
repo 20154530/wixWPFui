@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="gb2312"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+  <Bundle Name="TestInstall" IconSourceFile="Res\test.ico" UpgradeCode="6a330b47-2577-43ad-9095-1861bb25889a" Version="1.0.0.0" >
+    <BootstrapperApplicationRef Id="ManagedBootstrapperApplicationHost">
+      <Payload SourceFile="bin\x86\Debug\WixBootstrapperWPF.exe" />
+      <Payload SourceFile="BootstrapperCore.config" />
+      <Payload SourceFile="bin\x86\Debug\Microsoft.Deployment.WindowsInstaller.dll" />
+    </BootstrapperApplicationRef>
+
+    <Variable Name="LogFileLocation" Value="D:\log.txt" Persisted="yes" bal:Overridable="yes" />
+    <Variable Name="UserInput" Value="&lt;none&gt;" Persisted="yes" />
+    <Variable Name="InstallPath" Value="[ProgramFiles6432Folder]\My Company\My Product" Persisted="yes" />
+
+    <Chain>
+      <PackageGroupRef Id="NetFx47Redist" />
+
+      <MsiPackage Id="TestInstall" DisplayInternalUI="no" SourceFile="My Product.msi">
+        <MsiProperty Name="USERINPUT" Value="[UserInput]" />
+        <MsiProperty Name="INSTALLDIR" Value="[InstallPath]" />
+        <MsiProperty Name="WIXBUNDLEORIGINALSOURCE" Value="[WixBundleOriginalSource]" />
+      </MsiPackage>
+    </Chain>
+
+    <util:RegistrySearchRef Id="RegistrySearch1" />
+
+    <Log PathVariable="LogFileLocation" />
+  </Bundle>
+
+  <Fragment >
+    <util:RegistrySearch Key="SOFTWARE\Microsoft\Net Framework Setup\NDP\v4\Full" Value="Version" Variable="Netfx4FullVersion" Result="value" Root="HKLM" Id="RegistrySearch1" />
+  </Fragment>
+</Wix>
+
